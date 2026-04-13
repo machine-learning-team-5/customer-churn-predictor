@@ -5,7 +5,7 @@ from utils.auth import register_user, login_user
 from utils.analytics import get_admin_analytics, get_date_range_analytics
 import pandas as pd
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # =====================================================
 # SIMULATED ML MODEL
@@ -327,4 +327,5 @@ def predict_next_month():
 # RUN APP
 # =====================================================
 
-app = app
+if __name__ == "__main__":
+    app.run()
