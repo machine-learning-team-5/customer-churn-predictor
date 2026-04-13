@@ -18,7 +18,7 @@
 
 <div class="container">
 
-    <!-- Metrics -->
+    <!-- ================= METRICS ================= -->
     <div class="metrics-grid">
 
         <div class="card metric-card">
@@ -43,78 +43,268 @@
 
     </div>
 
-    <!-- History -->
+    <!-- ================= REVENUE ESTIMATION ================= -->
+    <div class="card revenue-card">
+
+        <div class="revenue-header" onclick="toggleRevenue()">
+            <h3>Revenue Estimation</h3>
+            <span id="revenueArrow">▼</span>
+        </div>
+
+        <div id="revenueContent" class="revenue-content-collapsed">
+
+            <div class="revenue-body">
+                <h3>Total Revenue: ₹<span id="totalRevenue">0</span></h3>
+                <h3>Revenue Loss (High Risk Users): ₹<span id="revenueLoss">0</span></h3>
+
+                <div class="chart-container" style="height:300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= NEXT MONTH PREDICTION ================= -->
+    <div class="card nextmonth-card">
+
+        <div class="nextmonth-header" onclick="toggleNextMonth()">
+            <h3>Predict Next Month</h3>
+            <span id="nextMonthArrow">▼</span>
+        </div>
+
+        <div id="nextMonthContent" class="nextmonth-content">
+
+            <div class="nextmonth-body">
+
+                <!-- KPI GRID -->
+                <div class="nextmonth-metrics">
+
+                    <div class="mini-card">
+                        <h4>Total Active Users</h4>
+                        <h2 id="nmTotalUsers">0</h2>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Expected Churn</h4>
+                        <h2 id="nmExpectedChurn">0</h2>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Churn Rate</h4>
+                        <h2 id="nmChurnRate">0%</h2>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Revenue Loss</h4>
+                        <h2>₹<span id="nmRevenueLoss">0</span></h2>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Predicted Revenue</h4>
+                        <h2>₹<span id="nmRevenue">0</span></h2>
+                    </div>
+
+                </div>
+
+                <!-- CHART -->
+                <div class="chart-container" style="height:300px;">
+                    <canvas id="nextMonthChart"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DATE RANGE ANALYTICS ================= -->
+    <div class="card daterange-card">
+
+        <div class="daterange-header" onclick="toggleDateRange()">
+            <h3>Date Range Analytics</h3>
+            <span id="dateArrow">▼</span>
+        </div>
+
+        <div id="dateRangeContent" class="daterange-content">
+
+            <!-- DATE INPUTS -->
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <button class="submit-btn" onclick="fetchDateRangeData()">
+                    Analyze
+                </button>
+            </div>
+
+            <!-- SUMMARY RESULTS -->
+            <div id="dateResults" style="margin-bottom:1rem;"></div>
+
+            <!-- MONTHLY TABLE -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Average Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dateMonthlyTable">
+                        <tr>
+                            <td colspan="2">No Data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= RISK SEGMENTATION ================= -->
+    <div class="card risk-card">
+
+        <div class="risk-header" onclick="toggleRisk()">
+            <h3>Risk Segmentation</h3>
+            <span id="riskArrow">▼</span>
+        </div>
+
+        <div id="riskContent" class="risk-content">
+
+            <div class="risk-body">
+                <div class="chart-container" style="height:300px;">
+                    <canvas id="riskPieChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= MONTHLY CHURN RANKING ================= -->
+    <div class="card monthly-card">
+
+        <div class="monthly-header" onclick="toggleMonthly()">
+            <h3>Monthly Churn Ranking</h3>
+            <span id="monthlyArrow">▼</span>
+        </div>
+
+        <div id="monthlyContent" class="monthly-content">
+
+            <div class="monthly-body">
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Average Probability</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyRankingTable">
+                            <tr>
+                                <td colspan="2">No Data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= HISTORY ================= -->
+    <div class="card history-card">
+
+        <div class="history-header" onclick="toggleHistory()">
+            <h3>Prediction History</h3>
+            <span id="historyArrow">▼</span>
+        </div>
+
+        <div id="historyContent" class="history-content">
+
+            <div class="history-body">
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Date</th>
+                                <th>Probability</th>
+                                <th>Risk</th>
+                                <th>Suggestion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminHistory"></tbody>
+                    </table>
+                </div>
+
+                <button class="submit-btn" onclick="exportCSV()">
+                    Export CSV
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= CHURN TREND ================= -->
+    <div class="card trend-card">
+
+        <div class="trend-header" onclick="toggleTrend()">
+            <h3>Monthly Churn Trend</h3>
+            <span id="trendArrow">▼</span>
+        </div>
+
+        <div id="trendContent" class="trend-content">
+
+            <div class="trend-body">
+                <div class="chart-container" style="height:350px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= BULK PREDICTION ================= -->
     <div class="card">
-        <h3>All Users History (Last 50)</h3>
-        <div class="table-wrapper">
+        <h3>Bulk Customer Churn Prediction</h3>
+
+        <input type="file" id="bulkFile" accept=".csv" />
+
+        <button class="submit-btn" onclick="uploadBulkFile()"
+            style="margin-top: 1rem; max-width: 300px;">
+            Upload & Predict
+        </button>
+
+        <div id="bulkSummary" style="margin-top: 1.5rem;"></div>
+
+        <div class="table-wrapper" style="margin-top: 1rem;">
             <table>
                 <thead>
                     <tr>
                         <th>User</th>
-                        <th>Time</th>
                         <th>Probability</th>
                         <th>Risk</th>
-                        <th>Suggestion</th>
                     </tr>
                 </thead>
-                <tbody id="adminHistory">
+                <tbody id="bulkResults">
                     <tr>
-                        <td colspan="5">Loading...</td>
+                        <td colspan="3">No file uploaded</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Chart -->
-    <div class="card">
-        <h3>Churn Trend (Last 10 Predictions)</h3>
-        <div class="chart-container">
-            <canvas id="adminChart"></canvas>
-        </div>
-    </div>
-
 </div>
-
-
-
-<!-- Bulk Prediction Section -->
-<div class="card">
-    <h3>Bulk Customer Churn Prediction</h3>
-
-    <input type="file" id="bulkFile" accept=".csv" />
-
-    <button class="submit-btn" onclick="uploadBulkFile()"
-        style="margin-top: 1rem; max-width: 300px;">
-        Upload & Predict
-    </button>
-
-    <div id="bulkSummary" style="margin-top: 1.5rem;"></div>
-
-    <div class="table-wrapper" style="margin-top: 1rem;">
-        <table>
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Probability</th>
-                    <th>Risk</th>
-                </tr>
-            </thead>
-            <tbody id="bulkResults">
-                <tr>
-                    <td colspan="3">No file uploaded</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-
 
 <script src="/static/admin.js"></script>
 <script src="/static/auth.js"></script>
 
 </body>
 </html>
-

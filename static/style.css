@@ -243,3 +243,356 @@ td {
     .metrics-grid { grid-template-columns: 1fr; }
     .input-grid { grid-template-columns: 1fr; }
 }
+
+/* ================= REVENUE HORIZONTAL EXPAND ================= */
+
+.revenue-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+}
+
+.revenue-title {
+    background: rgba(56, 189, 248, 0.1);
+    padding: 1.5rem;
+    border-radius: 16px;
+    cursor: pointer;
+    min-width: 250px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.revenue-title:hover {
+    background: rgba(56, 189, 248, 0.2);
+    transform: translateY(-2px);
+}
+
+.revenue-panel {
+    width: 0;
+    overflow: hidden;
+    transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.revenue-panel.open {
+    width: 650px;
+}
+
+.revenue-content {
+    padding: 2rem;
+    background: var(--card);
+    border-radius: 16px;
+}
+
+/* ================= CLEAN VERTICAL ACCORDION ================= */
+
+.revenue-card {
+    padding: 0; /* Remove default big padding */
+    overflow: hidden;
+}
+
+.revenue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.revenue-header:hover {
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.revenue-header h3 {
+    margin: 0;
+}
+
+.revenue-content-collapsed {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.revenue-content-collapsed.open {
+    max-height: 600px; /* Adjust if needed */
+}
+
+.revenue-body {
+    padding: 1.5rem;
+}
+
+/* ================= DATE RANGE ACCORDION ================= */
+
+.daterange-card {
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1e293b;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Header */
+.daterange-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    transition: background 0.3s ease;
+}
+
+.daterange-header:hover {
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.daterange-header h3 {
+    margin: 0;
+}
+
+/* Collapsible container */
+.daterange-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* When Open */
+.daterange-content.open {
+    max-height: 1000px;
+}
+
+/* Padding must be HERE only */
+.daterange-body {
+    padding: 2.5rem;
+}
+
+/* ================= RISK ACCORDION ================= */
+
+.risk-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.risk-header:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.risk-header h3 {
+    margin: 0;
+}
+
+.risk-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.risk-content.open {
+    max-height: 600px;
+}
+
+.risk-body {
+    padding: 1.5rem;
+}
+
+/* ================= MONTHLY ACCORDION ================= */
+
+.monthly-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.monthly-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.monthly-header:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.monthly-header h3 {
+    margin: 0;
+}
+
+.monthly-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.monthly-content.open {
+    max-height: 700px;
+}
+
+.monthly-body {
+    padding: 1.5rem;
+}
+
+/* ================= HISTORY ACCORDION ================= */
+
+.history-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.history-header:hover {
+    background: rgba(168, 85, 247, 0.15);
+}
+
+.history-header h3 {
+    margin: 0;
+}
+
+.history-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-content.open {
+    max-height: 800px;
+}
+
+.history-body {
+    padding: 1.5rem;
+}
+
+/* ================= TREND ACCORDION ================= */
+
+.trend-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.trend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.trend-header:hover {
+    background: rgba(34, 197, 94, 0.15);
+}
+
+.trend-header h3 {
+    margin: 0;
+}
+
+.trend-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trend-content.open {
+    max-height: 600px;
+}
+
+.trend-body {
+    padding: 1.5rem;
+}
+
+/* ================= NEXT MONTH ACCORDION ================= */
+
+.nextmonth-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.nextmonth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 16px;
+    transition: background 0.3s ease;
+}
+
+.nextmonth-header:hover {
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.nextmonth-header h3 {
+    margin: 0;
+}
+
+.nextmonth-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nextmonth-content.open {
+    max-height: 800px;
+}
+
+.nextmonth-body {
+    padding: 1.5rem;
+}
+
+/* ================= KPI GRID ================= */
+
+.nextmonth-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mini-card {
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.mini-card h4 {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.mini-card h2 {
+    color: #38bdf8;
+    margin: 0;
+}

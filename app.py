@@ -1,18 +1,15 @@
-from flask import Flask, render_template, request, jsonify, send_file
-from datetime import datetime, timedelta
+from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 from utils.db import users_collection, predictions_collection
 from utils.auth import register_user, login_user
-from utils.analytics import get_admin_analytics
-import csv
-import os
+from utils.analytics import get_admin_analytics, get_date_range_analytics
 import pandas as pd
 
 app = Flask(__name__)
 
-
-# -------------------------
+# =====================================================
 # SIMULATED ML MODEL
-# -------------------------
+# =====================================================
 
 def calculate_churn_probability(
     tenure,
@@ -22,7 +19,6 @@ def calculate_churn_probability(
     tickets_raised,
     profiles_used
 ):
-
     tenure_norm = min(tenure / 36.0, 1.0)
     watch_norm = min(watch_hours / 40.0, 1.0)
     days_norm = min(days_since_login / 30.0, 1.0)
@@ -50,9 +46,9 @@ def calculate_churn_probability(
     return round(probability, 3)
 
 
-# -------------------------
+# =====================================================
 # PAGE ROUTES
-# -------------------------
+# =====================================================
 
 @app.route("/")
 def index():
@@ -69,9 +65,9 @@ def admin():
     return render_template("admin.html")
 
 
-# -------------------------
-# AUTH
-# -------------------------
+# =====================================================
+# AUTH ROUTES
+# =====================================================
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -95,9 +91,9 @@ def login():
     return jsonify(result)
 
 
-# -------------------------
-# SINGLE PREDICT (STORES IN DB)
-# -------------------------
+# =====================================================
+# SINGLE PREDICTION
+# =====================================================
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -119,7 +115,9 @@ def predict():
         float(inputs.get("profiles_used", 2))
     )
 
-    risk = "High" if probability > 0.7 else "Medium" if probability > 0.4 else "Low"
+    risk = "High" if probability > 0.7 else \
+           "Medium" if probability > 0.4 else \
+           "Low"
 
     suggestion = (
         "Offer Premium trial" if risk == "High"
@@ -132,6 +130,7 @@ def predict():
         "probability": probability,
         "risk": risk,
         "suggestion": suggestion,
+        "source": "single",
         "inputs": inputs,
         "created_at": datetime.utcnow()
     }
@@ -145,88 +144,9 @@ def predict():
     })
 
 
-# -------------------------
-# USER HISTORY
-# -------------------------
-
-@app.route("/user-data/<email>")
-def user_data(email):
-
-    records = list(
-        predictions_collection
-        .find({"user": email})
-        .sort("created_at", -1)
-    )
-
-    formatted = []
-    for r in records:
-        formatted.append({
-            "_id": str(r["_id"]),
-            "probability": r.get("probability", 0),
-            "risk": r.get("risk", "Unknown"),
-            "suggestion": r.get("suggestion", "N/A"),
-            "created_at": r["created_at"].isoformat()
-            if r.get("created_at") else ""
-        })
-
-    return jsonify(formatted)
-
-
-# -------------------------
-# ADMIN ANALYTICS
-# -------------------------
-
-@app.route("/admin-data")
-def admin_data():
-    return jsonify(get_admin_analytics())
-
-
-# -------------------------
-# EXPORT LAST 30 DAYS CSV
-# -------------------------
-
-@app.route("/export-last-30-days")
-def export_last_30_days():
-
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
-
-    records = list(
-        predictions_collection.find(
-            {"created_at": {"$gte": thirty_days_ago}}
-        ).sort("created_at", -1)
-    )
-
-    if not records:
-        return jsonify({"error": "No data found for last 30 days"}), 404
-
-    file_path = "last_30_days_report.csv"
-
-    with open(file_path, mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow([
-            "User",
-            "Probability",
-            "Risk",
-            "Suggestion",
-            "Created At"
-        ])
-
-        for r in records:
-            writer.writerow([
-                r.get("user", "N/A"),
-                r.get("probability", 0),
-                r.get("risk", "Unknown"),
-                r.get("suggestion", "Not Available"),
-                r.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
-                if r.get("created_at") else "N/A"
-            ])
-
-    return send_file(file_path, as_attachment=True)
-
-
-# -------------------------
-# BULK CSV PREDICTION (NO DB STORAGE)
-# -------------------------
+# =====================================================
+# BULK PREDICTION
+# =====================================================
 
 @app.route("/bulk-predict", methods=["POST"])
 def bulk_predict():
@@ -236,13 +156,11 @@ def bulk_predict():
 
     file = request.files["file"]
 
-    if file.filename == "":
-        return jsonify({"error": "Empty file name"}), 400
-
     try:
         df = pd.read_csv(file)
 
         results = []
+        docs_to_insert = []
         total_probability = 0
 
         for index, row in df.iterrows():
@@ -256,19 +174,44 @@ def bulk_predict():
                 float(row.get("profiles_used", 2))
             )
 
-            risk = (
-                "High" if probability > 0.7
-                else "Medium" if probability > 0.4
-                else "Low"
-            )
+            risk = "High" if probability > 0.7 else \
+                   "Medium" if probability > 0.4 else \
+                   "Low"
+
+            user_email = row.get("email", f"User_{index+1}")
+
+            created_at_value = row.get("created_at")
+
+            if pd.notna(created_at_value):
+                try:
+                    created_at = datetime.fromisoformat(str(created_at_value))
+                except:
+                    created_at = datetime.utcnow()
+            else:
+                created_at = datetime.utcnow()
 
             results.append({
-                "user": row.get("email", f"User {index+1}"),
+                "user": user_email,
                 "probability": probability,
                 "risk": risk
             })
 
+            docs_to_insert.append({
+                "user": user_email,
+                "probability": probability,
+                "risk": risk,
+                "suggestion": "Bulk Upload",
+                "source": "bulk",
+                "created_at": created_at,
+                "inputs": {
+                    "subscription_type": row.get("subscription_type", "standard")
+                }
+            })
+
             total_probability += probability
+
+        if docs_to_insert:
+            predictions_collection.insert_many(docs_to_insert)
 
         overall_probability = round(total_probability / len(results), 3)
 
@@ -281,9 +224,107 @@ def bulk_predict():
         return jsonify({"error": str(e)}), 400
 
 
-# -------------------------
-# RUN
-# -------------------------
+# =====================================================
+# ADMIN ANALYTICS ROUTES
+# =====================================================
 
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+@app.route("/admin-data")
+def admin_data():
+    return jsonify(get_admin_analytics())
+
+
+@app.route("/admin/date-range", methods=["POST"])
+def admin_date_range():
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "total_predictions": 0,
+            "average_probability": "0%",
+            "high_risk_rate": 0,
+            "monthly_ranking": []
+        })
+
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+
+    if not start_date or not end_date:
+        return jsonify({
+            "total_predictions": 0,
+            "average_probability": "0%",
+            "high_risk_rate": 0,
+            "monthly_ranking": []
+        })
+
+    return jsonify(
+        get_date_range_analytics(start_date, end_date)
+    )
+
+# =====================================================
+# NEXT MONTH PREDICTION
+# =====================================================
+
+@app.route("/predict-next-month")
+def predict_next_month():
+
+    predictions = list(predictions_collection.find())
+
+    if not predictions:
+        return jsonify({
+            "total_users": 0,
+            "expected_churn": 0,
+            "churn_rate": 0,
+            "expected_revenue_loss": 0,
+            "expected_revenue": 0
+        })
+
+    total_users = len(predictions)
+
+    subscription_prices = {
+        "basic": 299,
+        "standard": 599,
+        "premium": 999
+    }
+
+    expected_churn = 0
+    expected_revenue_loss = 0
+    total_revenue = 0
+
+    for p in predictions:
+
+        probability = p.get("probability", 0)
+
+        sub_type = (
+            p.get("inputs", {})
+             .get("subscription_type", "standard")
+             .lower()
+        )
+
+        price = subscription_prices.get(sub_type, 599)
+
+        total_revenue += price
+
+        expected_churn += probability
+        expected_revenue_loss += probability * price
+
+    expected_churn = round(expected_churn)
+    expected_revenue_loss = round(expected_revenue_loss)
+
+    expected_revenue = total_revenue - expected_revenue_loss
+
+    churn_rate = round((expected_churn / total_users) * 100, 2)
+
+    return jsonify({
+        "total_users": total_users,
+        "expected_churn": expected_churn,
+        "churn_rate": churn_rate,
+        "expected_revenue_loss": expected_revenue_loss,
+        "expected_revenue": expected_revenue
+    })
+
+# =====================================================
+# RUN APP
+# =====================================================
+
+app = app
